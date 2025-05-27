@@ -6,9 +6,11 @@ import test_params
 def run_vkdispatch(params: test_params.Params) -> float:
     if params.r2c:
         buffer = vd.RFFTBuffer(params.shape)
+        output_buffer = vd.RFFTBuffer(params.shape)
         buffer_shape = buffer.real_shape
     else:
         buffer = vd.Buffer(params.shape, var_type=vd.complex64)
+        output_buffer = vd.Buffer(params.shape, var_type=vd.complex64)
         buffer_shape = buffer.shape
     
     sync_buffer = vd.Buffer((10,), var_type=vd.float32)
@@ -16,6 +18,7 @@ def run_vkdispatch(params: test_params.Params) -> float:
     cmd_stream = vd.CommandStream()
 
     vd.fft.fft(
+        output_buffer,
         buffer,
         buffer_shape=buffer_shape,
         cmd_stream=cmd_stream,

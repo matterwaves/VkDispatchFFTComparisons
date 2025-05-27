@@ -6,15 +6,14 @@ def dispatch_test(backend: str, params: test_params.Params) -> float:
     if backend == "vkdispatch":
         import vkdispatch_backend
         return vkdispatch_backend.run_vkdispatch(params)
-    # elif backend == "cupy":
-    #     from .cupy_backend import run_cupy
-    #     run_cupy(params)
-    # elif backend == "torch":
-    #     from .torch_backend import run_torch
-    #     run_torch(params)
-    # else:
-    #     raise ValueError(f"Unknown backend: {backend}")
-    # pass
+    elif backend == "cupy":
+        import cupy_backend
+        return cupy_backend.run_cupy(params)
+    elif backend == "torch":
+        import torch_backend
+        return torch_backend.run_torch(params)
+    else:
+        raise ValueError(f"Unknown backend: {backend}")
 
 @click.command()
 @click.help_option("--help", "-h")
