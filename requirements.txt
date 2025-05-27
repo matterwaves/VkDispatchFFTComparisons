@@ -1,0 +1,7 @@
+numpy
+matplotlib
+tqdm
+vkdispatch==0.0.24
+cupy
+click
+torch
