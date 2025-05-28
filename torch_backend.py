@@ -3,21 +3,21 @@ import tqdm
 import time
 import test_params
 
-def do_fft_instance(buffer: torch.Tensor, params: test_params.Params) -> None:
+def do_fft_instance(out_buf: torch.Tensor, buffer: torch.Tensor, params: test_params.Params) -> None:
     if params.r2c:
-        torch.fft.rfft(buffer, axis=params.axis) #, overwrite_x=True)
+        out_buf = torch.fft.rfft(buffer, axis=params.axis) #, overwrite_x=True)
     else:
-        torch.fft.fft(buffer, axis=params.axis) #, overwrite_x=True)
+        out_buf = torch.fft.fft(buffer, axis=params.axis) #, overwrite_x=True)
 
     if params.inverse:
         if params.r2c:
-            torch.fft.irfft(buffer, axis=params.axis) #, overwrite_x=True)
+            out_buf = torch.fft.irfft(buffer, axis=params.axis) #, overwrite_x=True)
         else:
-            torch.fft.ifft(buffer, axis=params.axis) #, overwrite_x=True)
+            out_buf = torch.fft.ifft(buffer, axis=params.axis) #, overwrite_x=True)
 
-def do_fft_batch(buffer: torch.Tensor, params: test_params.Params) -> None:
+def do_fft_batch(out_buf: torch.Tensor, buffer: torch.Tensor, params: test_params.Params) -> None:
     for _ in range(params.iter_batch):
-        do_fft_instance(buffer, params)
+        do_fft_instance(out_buf, buffer, params)
 
 def run_torch(params: test_params.Params) -> float:
     buffer = torch.empty(
@@ -25,9 +25,11 @@ def run_torch(params: test_params.Params) -> float:
         dtype=torch.complex64 if not params.r2c else torch.float32,
         device='cuda'
     )
+
+    output_buffer = torch.empty_like(buffer)
     
     for _ in range(params.warmup):
-        do_fft_batch(buffer, params)
+        do_fft_batch(output_buffer, buffer, params)
 
     torch.cuda.synchronize()
 
@@ -36,7 +38,7 @@ def run_torch(params: test_params.Params) -> float:
     start_time = time.time()
 
     for _ in range(params.iter_count // params.iter_batch):
-        do_fft_batch(buffer, params)
+        do_fft_batch(output_buffer, buffer, params)
         status_bar.update(params.iter_batch)
 
     torch.cuda.synchronize()

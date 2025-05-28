@@ -24,7 +24,7 @@ def run_vkdispatch(params: test_params.Params) -> float:
         cmd_stream=cmd_stream,
         inverse=params.inverse,
         axis=params.axis,
-        r2c=params.r2c
+        r2c=params.r2c,
     )
 
     for _ in range(params.warmup):

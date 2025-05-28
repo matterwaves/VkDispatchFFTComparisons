@@ -40,10 +40,10 @@ def run_test(
         print(e.stderr)
 
 if __name__ == "__main__":
-    batches_outer = 4096
-    batches_inner = 16
+    batches_outer = 1024
+    batches_inner = 64
 
-    fft_size = 64
+    fft_size = 128
 
     while fft_size <= 4096:
         run_test(
